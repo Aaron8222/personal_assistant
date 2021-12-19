@@ -1,10 +1,10 @@
-from google_setup import Create_Service
+from client_setup import Create_Client_Service
 import base64
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 def send_message(recipient, subject, text_message):
-    CLIENT_SECRET_FILE = 'credentials\credentials.json'
+    CLIENT_SECRET_FILE = 'credentials\client_key.json'
     API_NAME = 'gmail'
     API_VERSION = 'v1'
     SCOPES = ['https://mail.google.com/']
