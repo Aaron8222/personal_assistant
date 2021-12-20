@@ -21,7 +21,7 @@ def send_message(recipient, subject, text_message):
     message = service.users().messages().send(userId='me', body={'raw': raw_string}).execute()
     print(message)
 
-phone_number = '6172857681@vzwpix.com'
-subject = 'Amazon Order'
+phone_number = '6176209877@vzwpix.com'
+subject = 'Hi'
 text_message = 'This is an automated message!'
 send_message(phone_number, subject, text_message)
