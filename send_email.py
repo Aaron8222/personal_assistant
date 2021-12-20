@@ -1,4 +1,4 @@
-from client_setup import Create_Client_Service
+from client_setup import create_service
 import base64
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -9,7 +9,7 @@ def send_message(recipient, subject, text_message):
     API_VERSION = 'v1'
     SCOPES = ['https://mail.google.com/']
 
-    service = Create_Service(CLIENT_SECRET_FILE, API_NAME, API_VERSION, SCOPES)
+    service = create_service(CLIENT_SECRET_FILE, API_NAME, API_VERSION, SCOPES)
 
     emailMsg = text_message
     mimeMessage = MIMEMultipart()
