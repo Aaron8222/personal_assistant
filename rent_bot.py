@@ -47,17 +47,30 @@ def login_bbs(username, password, driver, wait_time=10):
     list[0].send_keys(username) # username
     list[1].send_keys(password) # password
 
+    #verification_code = verify_code(driver)
     verification_code = verify_code(driver)
     driver.find_element(By.NAME, 'seccodeverify').click()
     driver.find_element(By.NAME, 'seccodeverify').send_keys(verification_code)    
     driver.implicitly_wait(wait_time)
 
 def verify_code(driver):
+    screenshot(driver)
+    time.sleep(3)
+    return image_to_text('human_verification.png')
+
+def screenshot(driver):
+    driver.save_screenshot('human_verification.png')
+
+"""
+def verify_code(driver):
     # get the image source
-    img = driver.find_element(By.CLASS_NAME, 'vm')
-    src = img.get_attribute('src')
+    list = driver.find_elements(By.CLASS_NAME, 'vm')
+    print(list)
+    src = list[2].get_attribute('src')
     print(src)
-    return image_to_text(src)
+    urllib.request.urlretrieve(src, "captcha.png")
+    image_to_text('captcha.png')
+"""
 
 def image_to_text(img):
     gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
@@ -67,7 +80,6 @@ def image_to_text(img):
     img = cv2.erode(gray, kernel, iterations=1)
     img = cv2.dilate(img, kernel, iterations=1)
     return pytesseract.image_to_string(img)
-
 
 def main():
     s = Service('chromedriver.exe')
@@ -81,7 +93,7 @@ def main():
     rent_shen(ad_title, ad_message, driver)
     """
 
-    login_bbs(bbs_username, bbs_password, driver)
+    #login_bbs(bbs_username, bbs_password, driver)
     time.sleep(999)
 
 main()
