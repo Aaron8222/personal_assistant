@@ -9,6 +9,7 @@ from credentials.amazon_credentials import email, password
 import requests
 import json
 import time
+from bot_setup import driver_setup
 
 
 def get_url(url, driver, wait_time=10):
@@ -23,7 +24,8 @@ def login(email, password, driver, wait_time=10):
     driver.implicitly_wait(wait_time)
     driver.find_element(By.ID, 'ap_password').click()
     driver.find_element(By.ID, 'ap_password').send_keys(password + Keys.ENTER)
-    driver.implicitly_wait(wait_time)
+    #driver.implicitly_wait(wait_time)
+    time.sleep(10)
 
 def buy_now_button(url, driver, wait_time=10):
     get_url(url, driver)
@@ -35,9 +37,10 @@ def buy_now_button(url, driver, wait_time=10):
     # driver.find_element_by_id('turbo-checkout-pyo-button')
 
 def buy_item(buy_url, email, password):
-    s = Service('chromedriver.exe')
-    options = webdriver.ChromeOptions()
-    options.add_experimental_option('excludeSwitches', ['enable-logging'])
-    driver = webdriver.Chrome(service=s, options=options)
+    driver = driver_setup()
     login(email, password, driver)
     buy_now_button(buy_url, driver)
+
+
+url = r'https://www.amazon.com/Alexander-Del-Rossa-Bathrobe-A0125STLXL/dp/B00CHQ5LCM?ref_=Oct_DLandingS_D_a94574e1_61&smid=A1G65SAYOU9XNS&th=1&psc=1'
+buy_item(url, email, password)

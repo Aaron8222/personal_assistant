@@ -1,28 +1,23 @@
 import pyttsx3
-from decouple import config
 
-# Text to Speech Conversion
-def speak(text, engine):
-    """Used to speak whatever text is passed to it"""
-    
-    engine.say(text)
-    engine.runAndWait()
+engine = pyttsx3.init() # object creation
 
-
-USERNAME = config('USER')
-BOTNAME = config('BOTNAME')
+""" RATE"""
+rate = engine.getProperty('rate')   # getting details of current speaking rate
+print (rate)                        #printing current voice rate
+engine.setProperty('rate', 175)     # setting up new voice rate
 
 
-engine = pyttsx3.init('sapi5')
+"""VOLUME"""
+volume = engine.getProperty('volume')   #getting to know current volume level (min=0 and max=1)
+print (volume)                          #printing current volume level
+engine.setProperty('volume',1.0)    # setting up volume level  between 0 and 1
 
-# Set Rate
-engine.setProperty('rate', 190)
+"""VOICE"""
+voices = engine.getProperty('voices')       #getting details of current voice
+#engine.setProperty('voice', voices[0].id)  #changing index, changes voices. o for male
+engine.setProperty('voice', voices[1].id)   #changing index, changes voices. 1 for female
 
-# Set Volume
-engine.setProperty('volume', 1.0)
-
-# Set Voice (Female)
-voices = engine.getProperty('voices')
-engine.setProperty('voice', voices[1].id)
-
-speak(engine, 'hi')
+engine.say("Hello Aaron")
+engine.runAndWait()
+engine.stop()

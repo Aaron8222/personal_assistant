@@ -14,6 +14,9 @@ import cv2
 import pytesseract
 import numpy as np
 from credentials.rent_credentials import shen_username, shen_password, bbs_username, bbs_password
+from bot_setup import driver_setup
+import pyautogui
+from PIL import Image, ImageEnhance
 
 
 def get_url(url, driver, wait_time=10):
@@ -46,20 +49,47 @@ def login_bbs(username, password, driver, wait_time=10):
     list = driver.find_elements(By.CLASS_NAME, 'p_fre')
     list[0].send_keys(username) # username
     list[1].send_keys(password) # password
-
-    #verification_code = verify_code(driver)
+    #driver.find_element(By.LINK_TEXT, r'登录').click()
+    time.sleep(3)
+    screenshot(driver)
     verification_code = verify_code(driver)
-    driver.find_element(By.NAME, 'seccodeverify').click()
+    #driver.find_element(By.NAME, 'seccodeverify').click()
     driver.find_element(By.NAME, 'seccodeverify').send_keys(verification_code)    
     driver.implicitly_wait(wait_time)
 
 def verify_code(driver):
     screenshot(driver)
-    time.sleep(3)
-    return image_to_text('human_verification.png')
+    crop_image(r'temp\bot_verify.png')
+    return image_to_text(r'temp\bot_verify_processed.png')
 
 def screenshot(driver):
-    driver.save_screenshot('human_verification.png')
+    driver.save_screenshot(r'temp\bot_verify.png')
+    #myScreenshot = pyautogui.screenshot()
+    #myScreenshot.save(r'temp\bot_verify.png')
+
+def crop_image(image):
+    im = Image.open(image)
+    
+    # Size of the image in pixels (size of original image)
+    # (This is not mandatory)
+    width, height = im.size
+    
+    # Setting the points for cropped image
+    left = 776
+    top = 526
+    right = 926
+    bottom = 571
+    
+    return im.crop((left, top, right, bottom))
+
+    imt.save(r'temp\bot_verify_processed.png')
+
+
+def increase_contrast(image):
+    im1 = image.crop((left, top, right, bottom))
+    enhancer = ImageEnhance.Contrast(im1)
+    factor = 3 #increase contrast
+    return enhancer.enhance(factor)
 
 """
 def verify_code(driver):
@@ -73,19 +103,16 @@ def verify_code(driver):
 """
 
 def image_to_text(img):
-    gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
-    gray, img_bin = cv2.threshold(gray,128,255,cv2.THRESH_BINARY | cv2.THRESH_OTSU)
-    gray = cv2.bitwise_not(img_bin)
-    kernel = np.ones((2, 1), np.uint8)
-    img = cv2.erode(gray, kernel, iterations=1)
-    img = cv2.dilate(img, kernel, iterations=1)
-    return pytesseract.image_to_string(img)
+    pytesseract.pytesseract.tesseract_cmd=r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+    image = cv2.imread(img)	
+    #gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    #cv2.imshow('hi',gray)
+    #cv2.waitKey(0)
+    return pytesseract.image_to_string(image)
+
 
 def main():
-    s = Service('chromedriver.exe')
-    options = webdriver.ChromeOptions()
-    options.add_experimental_option('excludeSwitches', ['enable-logging'])
-    driver = webdriver.Chrome(service=s, options=options)
+    driver = driver_setup()
     ad_title = 'test'
     ad_message = 'test2'
     """
@@ -93,7 +120,9 @@ def main():
     rent_shen(ad_title, ad_message, driver)
     """
 
-    #login_bbs(bbs_username, bbs_password, driver)
+    login_bbs(bbs_username, bbs_password, driver)
     time.sleep(999)
 
-main()
+#main()
+crop_image(r'temp\bot_verify.png')
+print(image_to_text(r'temp\bot_verify_processed.png'))
