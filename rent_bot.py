@@ -17,6 +17,8 @@ from credentials.rent_credentials import shen_username, shen_password, bbs_usern
 from bot_setup import driver_setup
 import pyautogui
 from PIL import Image, ImageEnhance
+from skimage import filters
+from skimage.io import imread, imsave
 
 
 def get_url(url, driver, wait_time=10):
@@ -79,16 +81,18 @@ def crop_image(image):
     top = 526
     right = 926
     bottom = 571
-    
-    return im.crop((left, top, right, bottom))
+    im1 = im.crop((left, top, right, bottom))
+    im2 = im1.resize((width*2,height*2))
+    #im2.save(r'temp\bot_verify_cropped.png')
+    return im2
 
-    imt.save(r'temp\bot_verify_processed.png')
 
+def contrast(image, factor):
+    enhancer = ImageEnhance.Contrast(image)
+    return enhancer.enhance(factor)
 
-def increase_contrast(image):
-    im1 = image.crop((left, top, right, bottom))
-    enhancer = ImageEnhance.Contrast(im1)
-    factor = 3 #increase contrast
+def brightness(image, factor):
+    enhancer = ImageEnhance.Brightness(image)
     return enhancer.enhance(factor)
 
 """
@@ -106,10 +110,19 @@ def image_to_text(img):
     pytesseract.pytesseract.tesseract_cmd=r'C:\Program Files\Tesseract-OCR\tesseract.exe'
     image = cv2.imread(img)	
     #gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    #cv2.imshow('hi',gray)
+    #cv2.imshow('hi',image)
     #cv2.waitKey(0)
     return pytesseract.image_to_string(image)
 
+def remove_background(image):
+    # Load image as greyscale
+    img = imread(image, as_gray=True)
+
+    # Get Otsu threshold - result is 151
+    threshold = filters.threshold_otsu(img) 
+
+    result = (img>threshold-0.2).astype(np.uint8) * 255 
+    imsave('result.png',result)
 
 def main():
     driver = driver_setup()
@@ -124,5 +137,9 @@ def main():
     time.sleep(999)
 
 #main()
-crop_image(r'temp\bot_verify.png')
-print(image_to_text(r'temp\bot_verify_processed.png'))
+cropped_image = crop_image(r'temp\bot_verify.png')
+final_image = contrast(cropped_image, 1)
+final_image2 = brightness(final_image, 1)
+final_image2.save(r'temp\bot_verify_cropped.png')
+remove_background(r'temp\bot_verify_cropped.png')
+print(image_to_text(r'result.png'))
