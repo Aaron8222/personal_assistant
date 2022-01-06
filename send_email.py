@@ -16,12 +16,13 @@ def send_message(recipient, subject, text_message):
     mimeMessage['to'] = recipient
     mimeMessage['subject'] = subject
     mimeMessage.attach(MIMEText(emailMsg, 'plain'))
+    # https://stackoverflow.com/questions/1633109/creating-a-mime-email-template-with-images-to-send-with-python-django/1633493#1633493
     raw_string = base64.urlsafe_b64encode(mimeMessage.as_bytes()).decode()
 
     message = service.users().messages().send(userId='me', body={'raw': raw_string}).execute()
     print(message)
 
-phone_number = '6176209877@vzwpix.com'
+phone_number = ''
 subject = 'Hi'
-text_message = 'This is an automated message!'
+text_message = ""
 send_message(phone_number, subject, text_message)

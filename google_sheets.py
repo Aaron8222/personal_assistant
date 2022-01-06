@@ -18,10 +18,30 @@ def get_google_form_data():
     API_VERSION = 'v4'
     SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']
     SPREADSHEET_ID = '1QGyBmp2lxFNSkTHnPbuRAvtpNP4-wmwkSc06zbsQ75Y'
-    RANGE = "responses!A1:C2"
-
+    RANGE = "responses!A1:C999"
     service = create_service(API_NAME, API_VERSION, SCOPES, SERVICE_SECRET_FILE)
     result = service.spreadsheets().get(spreadsheetId=SPREADSHEET_ID, ranges=RANGE, includeGridData=True).execute()
-    pprint(result)
 
-get_google_form_data()
+    update_order_row()
+    with open('temp/current_amazon_order.txt', 'r') as f:
+        order_row = int(f.readline())
+    if len(result['sheets'][0]['data'][0]['rowData']) != order_row + 1:
+        date = result['sheets'][0]['data'][0]['rowData'][order_row]['values'][0]['formattedValue']
+        name = result['sheets'][0]['data'][0]['rowData'][order_row]['values'][1]['formattedValue']
+        link = result['sheets'][0]['data'][0]['rowData'][order_row]['values'][2]['formattedValue']
+        """
+                            sheet?          ?             row          column
+        """
+        return date, name, link
+    else:
+        return None
+
+    #print(f'The date is {date}. The name is {name}. The link is {link}')
+    
+
+def update_order_row():
+    with open('temp/current_amazon_order.txt', 'r') as f:
+        last_order_row = int(f.readline()) 
+    current_order_row = last_order_row + 1
+    with open('temp/current_amazon_order.txt', 'w') as f:
+        f.write(str(current_order_row))

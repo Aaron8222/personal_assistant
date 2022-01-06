@@ -5,41 +5,58 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selectorlib import Extractor
-from credentials.amazon_credentials import email, password
-import requests
-import json
+from credentials.amazon_credentials import email, password, addresses, find_other_address
+from send_email import send_message
 import time
 from bot_setup import driver_setup
 from useful_selenium_functions import find_element_and_click, find_element_and_send_keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-
+from selenium.webdriver import ActionChains
+from google_sheets import get_google_form_data
 
 def login(email, password, driver):
     driver.get('https://www.amazon.com/')
-    find_element_and_click(By.XPATH, '/html/body/div[1]/header/div/div[3]/div[10]/div[2]/a/span', driver)
+    find_element_and_click(By.LINK_TEXT, 'Sign in', driver)
     find_element_and_send_keys(By.ID, 'ap_email', email + Keys.ENTER, driver)
     find_element_and_send_keys(By.ID, 'ap_password', password + Keys.ENTER, driver)
 
 def checkout(url, address, driver):
     driver.get(url)
     find_element_and_click(By.ID, 'buy-now-button', driver)
-    check_address(By.PARTIAL_LINK_TEXT, address, driver)
-    time.sleep(999)
-    # find_element_and_click(By.ID, 'turbo-checkout-pyo-button', driver)
+    #check_address(By.PARTIAL_LINK_TEXT, address, driver)
 
-def check_address(path_type, path, driver):
-    try:
-        EC.presence_of_element_located((path_type, path))
-    except TimeoutException:
-        find_element_and_click(By.LINK_TEXT, 'Ship to', driver)
-        find_element_and_click(By.PARTIAL_LINK_TEXT, path, driver)
+def check_address(path_type, address, driver):
+    driver.switch_to.frame('turbo-checkout-iframe')
+    if address != 'Olin': # Assumes Olin address is default
+        current_selected_address = driver.find_element(path_type, addresses[find_other_address[address]])
+        ActionChains(driver).move_to_element(current_selected_address).click().perform()
+        correct_address = driver.find_element(path_type, addresses[address])
+        ActionChains(driver).move_to_element(correct_address).click().perform()
 
 def buy_item(buy_url, email, password, address):
     driver = driver_setup()
+    driver.implicitly_wait(10)
     login(email, password, driver)
     checkout(buy_url, address, driver)
+    #find_element_and_click(By.ID, 'turbo-checkout-pyo-button', driver)
+    time.sleep(5)
+    driver.save_screenshot('temp/comfirmation_order')
+    driver.switch_to.default_content()
+    driver.close()
+
+def check_google_sheet():
+    while 1:
+        data = get_google_form_data()
+        if data is None:
+            time.sleep(60)
+        else:
+            return data
+    
 
 
-url = r'https://www.amazon.com/Waterproof-Electric-Vehicles-Batteries-Excellent/dp/B08JZBZCXN?ref=dlx_deals_gd_dcl_tlt_47_bdd093a3_dt_sl15_c9&spLa=ZW5jcnlwdGVkUXVhbGlmaWVyPUEyME9OQzU1VVFGSVNCJmVuY3J5cHRlZElkPUEwNzU1MDMwMUIxUEJEWTcyTzhaQSZlbmNyeXB0ZWRBZElkPUEwOTI0NDA1S1JSWVhPSjdJR083JndpZGdldE5hbWU9c3BfZ2JfbWFpbl9zdXBwbGUmYWN0aW9uPWNsaWNrUmVkaXJlY3QmZG9Ob3RMb2dDbGljaz10cnVl'
-buy_item(url, email, password, '69 APPLETON STREET')
+def main():
+    while 1:
+        date, name, link = check_google_sheet()
+        buy_item(link, email, password, 'Home')
+        send_message()
