@@ -5,7 +5,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selectorlib import Extractor
-from credentials.amazon_credentials import email, password, addresses, find_other_address
+from credentials.amazon_credentials import email, password, addresses, find_other_address, customer_emails
 from send_email import send_message
 import time
 from bot_setup import driver_setup
@@ -39,9 +39,11 @@ def buy_item(buy_url, email, password, address):
     driver.implicitly_wait(10)
     login(email, password, driver)
     checkout(buy_url, address, driver)
+    time.sleep(5)
+    driver.save_screenshot('temp/comfirmation_order1.png')
     #find_element_and_click(By.ID, 'turbo-checkout-pyo-button', driver)
     time.sleep(5)
-    driver.save_screenshot('temp/comfirmation_order')
+    driver.save_screenshot('temp/comfirmation_order2.png')
     driver.switch_to.default_content()
     driver.close()
 
@@ -53,10 +55,9 @@ def check_google_sheet():
         else:
             return data
     
-
-
 def main():
-    while 1:
-        date, name, link = check_google_sheet()
-        buy_item(link, email, password, 'Home')
-        send_message()
+    #while 1:
+    date, name, link = check_google_sheet()
+    buy_item(link, email, password, 'Home')
+    send_message('6172857681@vzwpix.com','Amazon Confirmation',f'{name} has ordered something!',[r'temp\comfirmation_order1.png',r'temp\comfirmation_order2.png'])
+    send_message(customer_emails[name],'Amazon Confirmation','Your item has been ordered!',[r'temp\comfirmation_order1.png',r'temp\comfirmation_order2.png'])
