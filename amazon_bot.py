@@ -1,17 +1,11 @@
-from selenium import webdriver
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-from selectorlib import Extractor
 from credentials.amazon_credentials import email, password, addresses, find_other_address, customer_emails
 from send_email import send_message
 import time
 from bot_setup import driver_setup
 from useful_selenium_functions import find_element_and_click, find_element_and_send_keys
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver import ActionChains
 from google_sheets import get_google_form_data
 

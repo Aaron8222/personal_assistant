@@ -3,11 +3,7 @@ from playsound import playsound
 import speech_recognition as sr
 import sounddevice as sd
 from scipy.io.wavfile import write
-from pydub import AudioSegment
-from pydub.playback import play
-from credentials.ffmpeg import path_to_ffmpeg
 from delete_file import delete_file
-from jokes import jokes1
 import time
 from keywords import keywords_dict
 from random import randint
