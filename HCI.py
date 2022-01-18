@@ -8,7 +8,7 @@ import time
 from keywords import keywords_dict
 from random import randint
 from weather import get_weather
-from joke import get_random_joke
+from random_apis import get_random_joke, get_random_advice, get_random_insult
 
 def speak(text):
     tts = gTTS(text,lang='en',tld='com')
@@ -36,20 +36,9 @@ def guess_user_want(text_list):
             if keywords_dict[word] not in guess.keys():
                 guess[keywords_dict[word]] = 1
             guess[keywords_dict[word]] += 1
+    if len(guess) == 0:
+        return None
     return sorted(guess, key=guess.get)[-1]
-
-def joke_inquiry():
-    joke = get_random_joke()
-    speak(joke['setup'])
-    time.sleep(1)
-    speak(joke['punchline'])
-
-def weather_inquiry():
-    data = get_weather()
-    weather = data["current"]["weather"][0]['description']
-    temperature = data["current"]["temp"]
-    weather_report = f"It's currently {weather} and {round(temperature)} degrees celsius"
-    speak(weather_report)
 
 def main():
     while 1:
@@ -60,8 +49,19 @@ def main():
             best_guess = guess_user_want(text_list)
             print(f'It thinks you want: {best_guess}')
             if best_guess == 'joke':
-                joke_inquiry()
+                setup, punchline = get_random_joke()
+                speak(setup)
+                time.sleep(0.5)
+                speak(punchline)
             elif best_guess == 'weather':
-                weather_inquiry()
+                weather, temperature = get_weather()
+                weather_report = f"It's currently {weather} and {round(temperature)} degrees celsius"
+                speak(weather_report)
+            elif best_guess == 'advice':
+                speak(get_random_advice())
+            elif best_guess == 'insult':
+                speak(get_random_insult())
+            else:
+                speak("I'm not sure I understand")
 
 main()
