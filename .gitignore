@@ -2,3 +2,5 @@ credentials/
 quickstart.py
 test.py
 temp/
+voice_assistant.bat
+voice_assistant.vbs

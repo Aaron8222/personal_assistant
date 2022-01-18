@@ -23,11 +23,11 @@ def listen():
             r = sr.Recognizer()
             audio = r.listen(source)
             text = r.recognize_google(audio)
-            print(f'What it thinks you said: {text}')
+            print(f'What it thinks you said: {text} \n')
             return text
     except sr.UnknownValueError:
-        print("No clue what you said, listening again... \n")
-        listen()
+        print('No clue what you said, listening again... \n')
+        return listen()
 
 def guess_user_want(text_list):
     guess = {}
@@ -41,13 +41,15 @@ def guess_user_want(text_list):
     return sorted(guess, key=guess.get)[-1]
 
 def main():
+    print('Starting...')
     while 1:
-        if listen() == 'hey maple':
+        start = listen()
+        if start == 'hey maple':
             speak('Yes?')
             text_list = listen().split()
             #print(text_list)
             best_guess = guess_user_want(text_list)
-            print(f'It thinks you want: {best_guess}')
+            print(f'It thinks you want: {best_guess} \n') 
             if best_guess == 'joke':
                 setup, punchline = get_random_joke()
                 speak(setup)
