@@ -17,30 +17,6 @@ def speak(text):
     playsound(file_name)
     delete_file(file_name)
 
-
-# def speech_to_text(file_name):
-#     # initialize the recognizer
-#     r = sr.Recognizer()
-#     with sr.AudioFile(file_name) as source:
-#         # listen for the data (load audio to memory)
-#         audio_data = r.record(source)
-#         # recognize (convert from speech to text)
-#         text = r.recognize_google(audio_data)
-#     delete_file(file_name)
-#     return text
-
-# def listen(file_name, duration):
-#     # duration in seconds
-#     fs = 44100 # Sample rate
-#     start = time.perf_counter()
-#     myrecording = sd.rec(int(duration * fs), samplerate=fs, channels=2, dtype='int32')
-#     print('Recording')
-#     sd.wait()  # Wait until recording is finished
-#     print('Done')
-#     end = time.perf_counter()
-#     print(f'Finished in {round(end-start, 2)} second(s)')
-#     write(file_name, fs, myrecording)  # Save as WAV file
-
 def listen():
     try:
         with sr.Microphone() as source:
@@ -52,11 +28,6 @@ def listen():
     except sr.UnknownValueError:
         print("No clue what you said, listening again... \n")
         listen()
-
-# def start_inquiry(file_name, phrase):
-#     text = speech_to_text(file_name)
-#     if text == phrase:
-#         return True
 
 def guess_user_want(text_list):
     guess = {}
