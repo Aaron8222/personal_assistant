@@ -43,8 +43,12 @@ def guess_user_want(text_list):
 def main():
     print('Starting...')
     while 1:
-        start = listen()
-        if start == 'hey maple':
+        start_list = listen().split()
+        count = 0
+        for word in start_list:
+            if word == 'hey' or word == 'maple' or word == 'a':
+                count += 1
+        if count == 2:
             speak('Yes?')
             text_list = listen().split()
             #print(text_list)
