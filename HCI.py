@@ -9,6 +9,8 @@ from keywords import keywords_dict
 from random import randint
 from weather import get_weather
 from random_apis import get_random_joke, get_random_advice, get_random_insult
+import keyboard
+
 
 def speak(text):
     tts = gTTS(text,lang='en',tld='com')
@@ -38,17 +40,20 @@ def guess_user_want(text_list):
             guess[keywords_dict[word]] += 1
     if len(guess) == 0:
         return None
-    return sorted(guess, key=guess.get)[-1]
+    return sorted(guess, key=guess.get)[-1] 
 
 def main():
-    print('Starting...')
+    print('start')
     while 1:
+        print('listening')
         start_list = listen().split()
         count = 0
         for word in start_list:
             if word == 'hey' or word == 'maple' or word == 'a':
                 count += 1
+        print('end listen')
         if count == 2:
+            print('yes?')
             speak('Yes?')
             text_list = listen().split()
             #print(text_list)

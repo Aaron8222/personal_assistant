@@ -16,3 +16,6 @@ def auth():
         'scope': 'playlist-modify-private',
     })
     print(auth_code)
+
+
+auth()
